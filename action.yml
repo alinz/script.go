@@ -1,0 +1,24 @@
+name: "script"
+description: "Run a go script"
+author: "Ali Najafizadeh"
+
+inputs:
+  paths:
+    description: "path to go script"
+    required: true
+  workspace:
+    description: "path to workspace"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        ls -lath ${{ inputs.workspace }}
+        ls -lath .
+        cd ${{ github.action_path }}; go run cmd/script/main.go ${{ inputs.workspace }}/ ${{ inputs.paths }}
+
+branding:
+  icon: "terminal"
+  color: "gray-dark"
