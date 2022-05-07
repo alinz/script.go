@@ -1,4 +1,4 @@
-name: "script"
+name: "script.go"
 description: "Run a go script"
 author: "Ali Najafizadeh"
 
