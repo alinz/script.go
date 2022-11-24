@@ -15,8 +15,6 @@ runs:
   steps:
     - shell: bash
       run: |
-        ls -lath ${{ inputs.workspace }}
-        ls -lath .
         cd ${{ github.action_path }}; go run cmd/script/main.go ${{ inputs.workspace }}/ ${{ inputs.paths }}
 
 branding:

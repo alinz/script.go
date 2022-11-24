@@ -62,7 +62,7 @@ func main() {
 		pluginPaths[i] = pluginPath
 	}
 
-	err := script.RunPlugins(pluginPaths...)
+	err := script.RunPlugins(workspace, pluginPaths...)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
