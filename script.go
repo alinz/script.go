@@ -3,9 +3,12 @@ package script
 import (
 	"fmt"
 	"plugin"
+	"strings"
 )
 
 func RunPlugins(workspace string, paths ...string) error {
+	workspace = strings.TrimSuffix(workspace, "/")
+
 	for _, path := range paths {
 		p, err := plugin.Open(path)
 		if err != nil {
