@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/alinz/script.go"
+	"github.com/alinz/script.go/cmd/script/internal/plugins"
 )
 
 func main() {
@@ -62,7 +62,7 @@ func main() {
 		pluginPaths[i] = pluginPath
 	}
 
-	err := script.RunPlugins(workspace, pluginPaths...)
+	err := plugins.Run(workspace, pluginPaths...)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)

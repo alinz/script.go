@@ -1,6 +1,6 @@
 # Github Action Script.go
 
-This little github action let's you write the rest of your deployment script in Go. Behind the scene, it creates a plugin out of your Go code and executes them.
+This little GitHub action lets you write the rest of your deployment script in Go. Behind the scenes, it creates a plugin out of your Go code and executes it.
 
 example of using this Github Action
 
