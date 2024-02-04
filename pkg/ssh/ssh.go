@@ -63,7 +63,7 @@ func (c *client) RunRemote(cmds ...string) error {
 			fmt.Println(err)
 			return
 		}
-		io.Copy(os.Stdout, out)
+		io.Copy(os.Stderr, out)
 	}()
 
 	time.Sleep(1 * time.Second)
@@ -74,6 +74,7 @@ func (c *client) RunRemote(cmds ...string) error {
 
 	err = session.Run(strings.Join(cmds, "\n"))
 	if err != nil {
+		time.Sleep(1 * time.Second)
 		return err
 	}
 
