@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -37,12 +38,25 @@ func (c *client) CreateEnvFile(path string, envMap map[string]string) error {
 	}
 
 	// then try to replace all variables starts with ${key} with corresponding value
-	// then write to file
 	for k, v := range envMap {
 		for key, value := range allEnvMap {
 			v = strings.ReplaceAll(v, key, value)
 		}
 
+		envMap[k] = v
+	}
+
+	keys := make([]string, 0, len(envMap))
+	for k := range envMap {
+		keys = append(keys, k)
+	}
+
+	// Sort the keys to make sure the order is consistent
+	sort.Strings(keys)
+
+	// write to file
+	for _, k := range keys {
+		v := envMap[k]
 		sb.WriteString(fmt.Sprintf("%s=%s", k, v))
 		sb.WriteString("\n")
 	}
