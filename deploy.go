@@ -21,10 +21,22 @@ type runner struct {
 var _ Runner = (*runner)(nil)
 
 func (r *runner) RunLocal(workspace string, cmds ...string) error {
+	// convert all availables env into map
+	// map[${key}] = value
+	allEnvMap := make(map[string]string)
+	allEnvs := os.Environ()
+	for _, env := range allEnvs {
+		parts := strings.Split(env, "=")
+		allEnvMap[fmt.Sprintf("${%s}", parts[0])] = parts[1]
+	}
+
 	for _, cmd := range cmds {
 
 		// replace ${workspace} with the value
 		cmd = strings.ReplaceAll(cmd, "${workspace}", workspace)
+		for key, value := range allEnvMap {
+			cmd = strings.ReplaceAll(cmd, key, value)
+		}
 
 		fmt.Printf("[ LOCAL RUN ]: %s\n", cmd)
 
