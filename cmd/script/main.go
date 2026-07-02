@@ -6,65 +6,62 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
-	"github.com/alinz/script.go/cmd/script/internal/plugins"
+	"github.com/alinz/script.go/v2/cmd/script/internal/plugins"
 )
 
 func main() {
+	log.SetFlags(0)
+
+	if len(os.Args) < 3 {
+		log.Fatalf("usage: %s <workspace> <comma-separated-script-paths>", filepath.Base(os.Args[0]))
+	}
+
 	workspace := os.Args[1]
 	arg := strings.Join(os.Args[2:], "")
 
-	pluginSrcPaths := strings.Split(arg, ",")
-	for i, path := range pluginSrcPaths {
-		pluginSrcPaths[i] = strings.TrimSpace(path)
+	var pluginSrcPaths []string
+	for path := range strings.SplitSeq(arg, ",") {
+		path = strings.TrimSpace(path)
+		if path != "" {
+			pluginSrcPaths = append(pluginSrcPaths, path)
+		}
 	}
 
+	if len(pluginSrcPaths) == 0 {
+		log.Fatal("no script paths provided")
+	}
+
+	buildDir, err := os.MkdirTemp("", "script-go-plugins-")
+	if err != nil {
+		log.Fatalf("failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(buildDir)
+
 	pluginPaths := make([]string, len(pluginSrcPaths))
-	env := os.Environ()
-	env = append(env, fmt.Sprintf("GOOS=%s", runtime.GOOS))
 
 	for i, pluginSrcPath := range pluginSrcPaths {
-		pluginPath := filepath.Join(os.TempDir(), "plugin.so")
-
+		// each plugin needs its own output file; sharing one path would make
+		// every entry point at the last plugin built
+		pluginPath := filepath.Join(buildDir, fmt.Sprintf("plugin-%d.so", i))
 		inputDir := filepath.Join(workspace, pluginSrcPath)
 
-		cmd := exec.Cmd{
-			Path: "go",
-			Args: []string{
-				"go", "build", "-buildmode=plugin", "-o", pluginPath,
-			},
-			Env: env,
-			Dir: inputDir,
-		}
+		fmt.Printf("[ BUILD ]: %s\n", pluginSrcPath)
 
-		if filepath.Base(cmd.Path) == cmd.Path {
-			if lp, err := exec.LookPath(cmd.Path); err != nil {
-				log.Fatalf("failed to find go binary: %s", err)
-			} else {
-				cmd.Path = lp
-			}
-		}
+		cmd := exec.Command("go", "build", "-buildmode=plugin", "-o", pluginPath, ".")
+		cmd.Dir = inputDir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 
-		output, err := cmd.Output()
-		if exiterr, ok := err.(*exec.ExitError); ok {
-			log.Fatalf("failed to execute build plugin:\n%s", string(exiterr.Stderr))
-		} else if err != nil {
-			log.Fatalf("failed to execute build plugin: %v", err)
-		}
-
-		if len(output) > 0 {
-			log.Fatalf("failed to build plugin %s: %s", pluginSrcPath, string(output))
-			return
+		if err := cmd.Run(); err != nil {
+			log.Fatalf("failed to build plugin %s: %v", pluginSrcPath, err)
 		}
 
 		pluginPaths[i] = pluginPath
 	}
 
-	err := plugins.Run(workspace, pluginPaths...)
-	if err != nil {
+	if err := plugins.Run(workspace, pluginPaths...); err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 }

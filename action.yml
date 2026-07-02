@@ -1,21 +1,21 @@
 name: "script.go"
-description: "Run a go script"
+description: "Write your deployment scripts in Go: build them as Go plugins and run them with SSH helpers for remote commands, file uploads, and env files"
 author: "Ali Najafizadeh"
 
 inputs:
   paths:
-    description: "path to go script"
+    description: "Comma-separated paths (relative to workspace) to the Go script folders. Each folder must be its own Go module with a go.mod file."
     required: true
   workspace:
-    description: "path to workspace"
+    description: "Path to the workspace, usually ${{ github.workspace }}"
     required: true
 
 runs:
   using: composite
   steps:
     - shell: bash
-      run: |
-        cd ${{ github.action_path }}; go run cmd/script/main.go ${{ inputs.workspace }}/ ${{ inputs.paths }}
+      working-directory: ${{ github.action_path }}
+      run: go run ./cmd/script "${{ inputs.workspace }}" "${{ inputs.paths }}"
 
 branding:
   icon: "terminal"
