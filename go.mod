@@ -1,4 +1,4 @@
-module github.com/alinz/script.go/v2
+module github.com/alinz/script.go
 
 go 1.26.3
 

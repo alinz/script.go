@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alinz/script.go/v2/cmd/script-local/internal/runner"
+	"github.com/alinz/script.go/cmd/script-local/internal/runner"
 )
 
 func main() {

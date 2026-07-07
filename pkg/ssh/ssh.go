@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"github.com/alinz/script.go/v2/internal/expand"
+	"github.com/alinz/script.go/internal/expand"
 )
 
 // Runner is the remote half of the script API.

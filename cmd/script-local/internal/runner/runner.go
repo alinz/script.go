@@ -6,20 +6,20 @@ import (
 	"os"
 	"time"
 
-	"github.com/alinz/script.go/v2"
-	"github.com/alinz/script.go/v2/internal/build"
-	"github.com/alinz/script.go/v2/internal/plugins"
+	"github.com/alinz/script.go"
+	"github.com/alinz/script.go/internal/build"
+	"github.com/alinz/script.go/internal/plugins"
 )
 
 // Config holds SSH and execution configuration.
 type Config struct {
-	Host          string
-	Port          int
-	User          string
-	PrivateKeyEnv string
+	Host           string
+	Port           int
+	User           string
+	PrivateKeyEnv  string
 	PrivateKeyPath string
-	HostPublicKey string
-	Timeout       time.Duration
+	HostPublicKey  string
+	Timeout        time.Duration
 }
 
 // Run builds and executes the deployment scripts with the given configuration.

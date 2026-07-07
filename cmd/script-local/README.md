@@ -89,7 +89,7 @@ Example script:
 // deploy/main.go
 package main
 
-import "github.com/alinz/script.go/v2"
+import "github.com/alinz/script.go"
 
 var Runner = func(workspace string) error {
 	runner, err := script.NewRunner(&script.Config{

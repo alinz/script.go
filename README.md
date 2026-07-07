@@ -42,7 +42,7 @@ Each script lives in its own folder with its own `go.mod`, and must export a `Ru
 package main
 
 import (
-	"github.com/alinz/script.go/v2"
+	"github.com/alinz/script.go"
 )
 
 var Runner = func(workspace string) error {
@@ -125,7 +125,7 @@ See [`cmd/local/README.md`](cmd/local/README.md) for detailed documentation.
 Add the library to your script's module:
 
 ```
-go get github.com/alinz/script.go/v2
+go get github.com/alinz/script.go
 ```
 
 ### `script.NewRunner(config *script.Config) (script.Runner, error)`
@@ -164,7 +164,7 @@ type Runner interface {
 - **`CreateEnvFile`** renders the map as sorted `KEY=value` lines and uploads it with `0600` permissions. Values may reference local env vars with `${NAME}`. The file is transferred over SCP, so values containing quotes, `$`, or backticks arrive intact.
 - **`Close`** releases the SSH connection.
 
-The lower-level SSH client is also available as `github.com/alinz/script.go/v2/pkg/ssh` with a functional-options constructor (`ssh.Client(ssh.WithAddr(...), ssh.WithUser(...), ssh.WithPrivateKey(...), ssh.WithHostKey(...), ssh.WithTimeout(...))`).
+The lower-level SSH client is also available as `github.com/alinz/script.go/pkg/ssh` with a functional-options constructor (`ssh.Client(ssh.WithAddr(...), ssh.WithUser(...), ssh.WithPrivateKey(...), ssh.WithHostKey(...), ssh.WithTimeout(...))`).
 
 ## Upgrading from v1 to v2
 
@@ -174,10 +174,10 @@ v2 is a cleanup and robustness release. The plugin contract (`var Runner = func(
 
 ```diff
 -import "github.com/alinz/script.go"
-+import "github.com/alinz/script.go/v2"
++import "github.com/alinz/script.go"
 ```
 
-Then in your script's folder run `go get github.com/alinz/script.go/v2` and `go mod tidy`.
+Then in your script's folder run `go get github.com/alinz/script.go` and `go mod tidy`.
 
 **2. `Runner` gained a `Close()` method.** Add `defer runner.Close()` after `NewRunner`. (If you implemented the interface yourself, you must add the method.)
 

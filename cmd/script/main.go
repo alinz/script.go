@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/alinz/script.go/v2/internal/build"
-	"github.com/alinz/script.go/v2/internal/plugins"
+	"github.com/alinz/script.go/internal/build"
+	"github.com/alinz/script.go/internal/plugins"
 )
 
 func main() {

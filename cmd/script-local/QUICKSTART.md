@@ -10,13 +10,13 @@ Create a test script directory in your project:
 mkdir -p scripts/deploy
 cd scripts/deploy
 go mod init github.com/myorg/myproject/scripts/deploy
-go get github.com/alinz/script.go/v2
+go get github.com/alinz/script.go
 cat > main.go << 'EOF'
 package main
 
 import (
 	"fmt"
-	"github.com/alinz/script.go/v2"
+	"github.com/alinz/script.go"
 )
 
 var Runner = func(workspace string) error {

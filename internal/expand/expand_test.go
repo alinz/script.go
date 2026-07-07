@@ -3,7 +3,7 @@ package expand_test
 import (
 	"testing"
 
-	"github.com/alinz/script.go/v2/internal/expand"
+	"github.com/alinz/script.go/internal/expand"
 )
 
 func TestVars(t *testing.T) {

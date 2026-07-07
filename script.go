@@ -10,8 +10,8 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/alinz/script.go/v2/internal/expand"
-	"github.com/alinz/script.go/v2/pkg/ssh"
+	"github.com/alinz/script.go/internal/expand"
+	"github.com/alinz/script.go/pkg/ssh"
 )
 
 // Runner combines local and remote execution. Close it when the script is
