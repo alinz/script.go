@@ -1,6 +1,6 @@
 module github.com/alinz/script.go/v2
 
-go 1.25.0
+go 1.26.3
 
 require golang.org/x/crypto v0.53.0
 
