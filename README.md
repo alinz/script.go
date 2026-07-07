@@ -91,35 +91,6 @@ var Runner = func(workspace string) error {
 
 For a full example repository, see [alinz/examples-script.go](https://github.com/alinz/examples-script.go).
 
-## Local Testing
-
-Before deploying in GitHub Actions, test your scripts locally using the `script-local` CLI:
-
-```bash
-# Copy the example env file and configure it
-cp cmd/script-local/.env.example cmd/script-local/.env
-# Edit cmd/local/.env with your deployment target
-
-# Run the script locally using the helper script
-./cmd/script-local/run.sh
-
-# Or run directly with flags
-go run ./cmd/script-local \
-  -workspace . \
-  -paths "deploy" \
-  -host example.com \
-  -user deploy \
-  -key ~/.ssh/deploy_key
-```
-
-This lets you:
-- **Test locally** without committing and pushing
-- **Iterate faster** during script development
-- **Validate credentials** before running in CI
-- **Debug scripts** with full output visibility
-
-See [`cmd/local/README.md`](cmd/local/README.md) for detailed documentation.
-
 ## API
 
 Add the library to your script's module:
