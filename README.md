@@ -97,14 +97,14 @@ Before deploying in GitHub Actions, test your scripts locally using the `script-
 
 ```bash
 # Copy the example env file and configure it
-cp cmd/local/.env.example cmd/local/.env
+cp cmd/script-local/.env.example cmd/script-local/.env
 # Edit cmd/local/.env with your deployment target
 
 # Run the script locally using the helper script
-./cmd/local/run.sh
+./cmd/script-local/run.sh
 
 # Or run directly with flags
-go run ./cmd/local \
+go run ./cmd/script-local \
   -workspace . \
   -paths "deploy" \
   -host example.com \
