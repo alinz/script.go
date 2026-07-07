@@ -31,7 +31,10 @@ type Runner interface {
 
 	// CopyFiles uploads each of filepaths (resolved relative to workspace)
 	// into remotePath, creating remotePath if needed. permissions is an
-	// octal mode such as "0644"; empty defaults to "0644".
+	// octal mode such as "0644"; empty defaults to "0644". Each filepath
+	// may contain ${workspace} and ${ENV_VAR} references, which are expanded
+	// before glob pattern matching. Filepaths may also be glob patterns
+	// (e.g., "*.txt", "bin/*", "${BUILD_DIR}/*.so").
 	CopyFiles(permissions, remotePath string, workspace string, filepaths ...string) error
 
 	// Close terminates the underlying SSH connection.
@@ -114,9 +117,29 @@ func (c *client) CopyFiles(permissions, remotePath, workspace string, filepaths 
 		return fmt.Errorf("failed to create remote directory %s: %w", remotePath, err)
 	}
 
+	// Expand glob patterns and collect all files to copy.
+	lookup := expand.OSLookup(map[string]string{"workspace": workspace})
+	var filesToCopy []string
 	for _, fp := range filepaths {
-		localPath := filepath.Join(workspace, fp)
+		// Expand environment variables in the filepath.
+		expandedFp := expand.Vars(fp, lookup)
+		pattern := filepath.Join(workspace, expandedFp)
+		// Check if the pattern contains glob characters.
+		if strings.ContainsAny(expandedFp, "*?[]") {
+			matches, err := filepath.Glob(pattern)
+			if err != nil {
+				return fmt.Errorf("failed to expand glob %q: %w", expandedFp, err)
+			}
+			if len(matches) == 0 {
+				return fmt.Errorf("glob pattern %q matched no files", expandedFp)
+			}
+			filesToCopy = append(filesToCopy, matches...)
+		} else {
+			filesToCopy = append(filesToCopy, pattern)
+		}
+	}
 
+	for _, localPath := range filesToCopy {
 		info, err := os.Stat(localPath)
 		if err != nil {
 			return fmt.Errorf("failed to stat %s: %w", localPath, err)

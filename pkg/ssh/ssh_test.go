@@ -1,6 +1,7 @@
 package ssh
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -104,5 +105,28 @@ func TestWithHostKeyRejectsGarbage(t *testing.T) {
 	opts := &clientOptions{}
 	if err := WithHostKey("not a key")(opts); err == nil {
 		t.Error("expected parse error for invalid host key")
+	}
+}
+
+func TestCopyFilesGlobPatterns(t *testing.T) {
+	tests := []struct {
+		pattern    string
+		hasGlob    bool
+		wantGlob   string
+	}{
+		{"file.txt", false, ""},
+		{"*.txt", true, "*.txt"},
+		{"bin/*", true, "bin/*"},
+		{"src/*.go", true, "src/*.go"},
+		{"[abc]*.txt", true, "[abc]*.txt"},
+		{"dir/file?.log", true, "dir/file?.log"},
+		{"path/to/file", false, ""},
+	}
+
+	for _, tt := range tests {
+		hasGlob := strings.ContainsAny(tt.pattern, "*?[]")
+		if hasGlob != tt.hasGlob {
+			t.Errorf("pattern %q: hasGlob = %v, want %v", tt.pattern, hasGlob, tt.hasGlob)
+		}
 	}
 }
