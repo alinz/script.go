@@ -123,7 +123,15 @@ func (c *client) CopyFiles(permissions, remotePath, workspace string, filepaths 
 	for _, fp := range filepaths {
 		// Expand environment variables in the filepath.
 		expandedFp := expand.Vars(fp, lookup)
-		pattern := filepath.Join(workspace, expandedFp)
+
+		// If the expanded path is absolute, use it as-is; otherwise join with workspace.
+		var pattern string
+		if filepath.IsAbs(expandedFp) {
+			pattern = expandedFp
+		} else {
+			pattern = filepath.Join(workspace, expandedFp)
+		}
+
 		// Check if the pattern contains glob characters.
 		if strings.ContainsAny(expandedFp, "*?[]") {
 			matches, err := filepath.Glob(pattern)
