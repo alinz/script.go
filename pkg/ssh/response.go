@@ -2,10 +2,13 @@ package ssh
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
+	"strings"
 )
 
+// RespType is the status byte of an scp protocol response.
 type RespType byte
 
 const (
@@ -41,7 +44,11 @@ func checkResponse(r io.Reader) error {
 	}
 
 	if respType != Ok {
-		return fmt.Errorf(msg)
+		msg = strings.TrimSpace(msg)
+		if msg == "" {
+			return fmt.Errorf("remote scp returned status %d", respType)
+		}
+		return errors.New(msg)
 	}
 
 	return nil

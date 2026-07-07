@@ -1,7 +1,7 @@
 module github.com/alinz/script.go
 
-go 1.23
+go 1.26.3
 
-require golang.org/x/crypto v0.18.0
+require golang.org/x/crypto v0.53.0
 
-require golang.org/x/sys v0.16.0 // indirect
+require golang.org/x/sys v0.46.0 // indirect
