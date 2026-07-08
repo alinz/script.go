@@ -7,7 +7,7 @@ inputs:
     description: "Comma-separated paths (relative to workspace) to the Go script folders. Each folder must be its own Go module with a go.mod file."
     required: true
   workspace:
-    description: "Path to the workspace, usually ${{ github.workspace }}"
+    description: "Path to the workspace (typically github.workspace)"
     required: true
 
 runs:
