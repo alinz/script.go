@@ -24,10 +24,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "stable" # needs Go 1.25+
+          go-version: "stable" # needs Go 1.22+
 
       - name: Run deployment scripts
-        uses: alinz/script.go@v2
+        uses: alinz/script.go@main
         with:
           workspace: ${{ github.workspace }} # <- this is important
           paths: .github/scripts/deploy # comma-separated if you have more than one
@@ -137,42 +137,30 @@ type Runner interface {
 
 The lower-level SSH client is also available as `github.com/alinz/script.go/pkg/ssh` with a functional-options constructor (`ssh.Client(ssh.WithAddr(...), ssh.WithUser(...), ssh.WithPrivateKey(...), ssh.WithHostKey(...), ssh.WithTimeout(...))`).
 
-## Upgrading from v1 to v2
+## Upgrading
 
-v2 is a cleanup and robustness release. The plugin contract (`var Runner = func(workspace string) error`) and the action inputs (`workspace`, `paths`) are **unchanged** — existing workflows keep working after switching the action ref to `@v2`. The library API has a few breaking changes:
+To use the latest version from main, update your workflow to use `@main`:
 
-**1. New import path.** The module moved to `/v2`:
-
-```diff
--import "github.com/alinz/script.go"
-+import "github.com/alinz/script.go"
+```yml
+uses: alinz/script.go@main
 ```
 
-Then in your script's folder run `go get github.com/alinz/script.go` and `go mod tidy`.
-
-**2. `Runner` gained a `Close()` method.** Add `defer runner.Close()` after `NewRunner`. (If you implemented the interface yourself, you must add the method.)
-
-**3. `RunLocal` now runs commands through `sh -c`.** Previously commands were naively split on spaces, so quoting and pipes didn't work. Now they do. Plain commands like `go build -o bin/api ./cmd/api` behave exactly as before; commands that relied on literal `"`/`|`/`>` characters being passed as arguments must now be shell-quoted.
-
-**4. `Config` has defaults and validation.** `Port: 0` now means 22, `PrivateKeyEnv: ""` means `SSH_PRIVATE_KEY`, and `DefaultLocalPath: ""` means `~/.ssh/id_rsa`. `NewRunner` returns an error immediately when `Host` or `User` is missing, or when the private key can't be found or parsed (v1 deferred these to a confusing dial failure).
-
-**5. `CreateEnvFile` uploads over SCP instead of `echo "..." > file`.** Values containing quotes, `$`, or backticks are no longer mangled by the remote shell, and the file is written with `0600` instead of the default umask. If you relied on the remote shell expanding variables inside values, reference local env vars with `${NAME}` instead — they are expanded before upload.
-
-**6. `pkg/ssh` options are now the exported `ssh.Option` type** (previously an unexported type), and `ssh.Client` validates that address, user, and key are set.
-
-Bug fixes you get for free:
-
-- Running **multiple scripts** in one action invocation now works — v1 compiled every plugin to the same temp file, so only the last script actually ran (N times).
-- Environment values containing `=` (base64 secrets, connection strings) are no longer truncated during `${VAR}` expansion.
-- Files in `CopyFiles` upload in the order given instead of random map order, and the input slice is no longer mutated.
-- Removed the arbitrary `time.Sleep` calls around remote execution; remote stdout is now streamed to the log too (v1 only streamed stderr).
-- The `Runner` symbol may now be declared as either `func Runner(...)` or `var Runner = func(...)` — v1 only accepted the former and failed with a confusing type error on the latter.
+For stable releases, use the latest version tag (e.g., `@v1`).
 
 ## Development
 
-```
-go build ./...
+```bash
+# Install dependencies
+go mod download
+
+# Run tests
 go test ./...
+
+# Build the action (compiles the script-go CLI)
+go build ./cmd/script-go/...
+
+# Test the action locally with a sample script
+go run ./cmd/script-go ./path/to/test/script
 ```
 
 ## License
